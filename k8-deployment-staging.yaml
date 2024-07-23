@@ -1,0 +1,209 @@
+# deployment
+# webserver deployment yaml with envs
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ondc-open-data
+  name: open-data-webserver-stage-deployment
+  labels:
+    app: open-data-webserver-stage
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: open-data-webserver-stage
+  template:
+    metadata:
+      labels:
+        app: open-data-webserver-stage
+    spec:
+      containers:
+        - name: open-data-webserver-stage
+          image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv2f484b3
+          ports:
+            - containerPort: 8001
+          env:
+            - name: POSTGRES_HOST
+              value: "ondc-prod-prod-open-data-db.cuvt1j5xqeya.ap-south-1.rds.amazonaws.com"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: "ondc-open-data-webapp-staging-user"
+            - name: DB_HOST
+              value: "ondc-prod-prod-open-data-db.cuvt1j5xqeya.ap-south-1.rds.amazonaws.com"
+            - name: POSTGRES_DB
+              value: "open_data_stage"
+            - name: POSTGRES_SCHEMA
+              value: "stage"
+            - name: DISTRICT_TBL
+              value: "district_level_orders"
+            - name: SUB_CATEGORY_TBL
+              value: "sub_category_level_orders"
+            - name: CATEGORY_TBL
+              value: "category_level_orders"
+            - name: AGG_TBL_B2C
+              value: "fact_order_detail"
+            - name: TBL_PINCODE
+              value: "pincode"
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-aws-secret
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-aws-secret-key
+                  key: AWS_SECRET_KEY
+            - name: ATH_SCHEMA
+              value: "awsdatacatalog"
+            - name: S3_STAGING_DIR
+              value: "s3://aws-athena-query-results-568130295144-ap-south-1/external-queries-results/"
+            - name: ATH_DB
+              value: "default"
+            - name: ATH_TBL_B2C
+              value: "nhm_order_fulfillment_subset_v1"
+            - name: AWS_REGION
+              value: "ap-south-1"
+            - name: KEY_DATA_INSIGHTS_TBL
+              value: "key_insights_district_wise"
+            - name: KEY_INSIGHTS_SUB_CATEGORY_TBL
+              value: "key_insights_sub_category"
+            - name: KEY_INSIGHTS_SELLER_TBL
+              value: "key_insights_sellers"
+            - name: ONDC_DASHBOARD_VERSION_TBL
+              value: "ondc_dashboard_version"
+            - name: VER_MAJOR
+              value: "3"
+            - name: VER_MINOR
+              value: "8"
+            - name: VER_MINOR_MINOR
+              value: "1"
+            - name: INCL_CAT_SCAT
+              value: "0"
+            - name: SENDER
+              value: "donotreply@ondc.org"
+            - name: RECEIVER
+              value: "opendata@ondc.org"
+            - name: API_URL
+              value: "http://127.0.0.1:8000/dashboard/api/key_insights/"
+            - name: Start_date
+              value: "2023-11-01"
+            - name: DATA_DICTIONARY_FILE
+              value: "/app/Webapp/data_dictionary_open_data_dashboard.csv"
+            - name: PINCODE_MAPPING_FILE
+              value: "/app/Webapp/pincode_table_open_data_dashboard.csv"
+            - name: DOMAIN_MAPPING_FILE
+              value: "/app/Webapp/domain_mapping_open_data_dashboard.csv"
+            - name:  ATH_TBL_B2B
+              value:  "shared_open_data_b2b_order"
+            - name:  ATH_TBL_VOUCHER
+              value:  "shared_open_data_gift_voucher_order"
+            - name:  SELLER_TBL 
+              value:  "dim_providers"
+            - name:  SUB_CATEGORY_PENETRATION_TBL
+              value:  "sub_category_penetration"
+            - name:  DIM_CATEGORIES_TBL
+              value:  "dim_categories"
+            - name:  DIM_DISTRICTS_TBL
+              value:  "dim_districts"
+            - name:  DIM_DATES_TBL
+              value:  "dim_dates"
+            - name:  OD_DQ_TBL
+              value:  "od_dq_nhm"
+            - name:  AGG_TBL_B2B
+              value:  "fact_order_detail_b2b"
+            - name:  B2B_DISTRICT_TBL
+              value:  "retail_b2b_district_level_orders"
+            - name:  B2B_DIM_DATES_TBL
+              value:  "retail_b2b_dim_dates"
+            - name:  AGG_TBL_VOUCHER
+              value:  "retail_voucher_fact_order_detail"
+            - name:  RV_DISTRICT_TBL
+              value:  "retail_voucher_district_level_orders"
+            - name:  KDI_CURRENT_ORDERS_THRESHOLD
+              value:  "500"
+            - name:  ACTIVE_SELLERS_MASKING
+              value:  "3"
+            - name:  ADD_RV_TO_B2C
+              value:  "1"
+            - name:  SAMPLE_SPREADSHEET_ID
+              value:  "1spk2zvQY4LFRe01vdGt5uSDHjpOIFQuSQJRd_7XmfvM"
+            - name:  START_DATE
+              value:  "2023-11-01"
+            - name:  DEBUG
+              value:  "False"
+            - name:  EMAIL_ENV
+              value:  "Staging"
+            - name: LOGISTICS_DISTRICT_TBL
+              value: "logistics_district_level_orders"
+            - name: ATH_TBL_LOG
+              value: "shared_open_data_logistics_order"
+            - name: AGG_TBL_LOG
+              value: "logistics_fact_order_detail"
+            - name: LOG_CATEGORY_TBL
+              value: "logistics_category_level_orders"
+            - name: MONTHLY_DISTRICT_TBL
+              value: "district_wise_monthly_aggregates"
+            - name: MONTHLY_PROVIDERS_TBL
+              value: "monthly_providers"
+            - name:  DEPLOYMENT_TYPE
+              value:  "stage"
+            - name: PROJ_SEC_STR
+              value: "ThisIsMySecretKey"
+            - name: LOGISTICS_PROVIDERS_TBL
+              value: "logistics_providers"
+            - name: LOGISTICS_MONTHLY_PROVIDERS_TBL
+              value: "logistics_monthly_providers"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-stage-secret
+                  key: db_password
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-secret-email
+                  key: EMAIL_PASSWORD
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "250m"
+
+---
+# webserver service yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: open-data-webserver-service-staging
+  namespace: ondc-open-data
+spec:
+  selector:
+    app: open-data-webserver-stage
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+  type: NodePort
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: open-data-webserver-staging-hpa
+  namespace: ondc-open-data
+spec:
+  maxReplicas: 1
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: open-data-webserver-stage-deployment
+  targetCPUUtilizationPercentage: 80

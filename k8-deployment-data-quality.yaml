@@ -1,0 +1,125 @@
+# deployment
+# webserver deployment yaml with envs
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: ondc-open-data
+  name: open-data-webserver-data-quality-deployment
+  labels:
+    app: open-data-webserver-data-quality
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: open-data-webserver-data-quality
+  template:
+    metadata:
+      labels:
+        app: open-data-webserver-data-quality
+    spec:
+      containers:
+        - name: open-data-webserver-data-quality
+          image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv6a1b1b0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: POSTGRES_HOST
+              value: "ondc-prod-prod-open-data-db.cuvt1j5xqeya.ap-south-1.rds.amazonaws.com"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: "ondc-open-data-webapp-staging-user"
+            - name: DB_HOST
+              value: "ondc-prod-prod-open-data-db.cuvt1j5xqeya.ap-south-1.rds.amazonaws.com"
+            - name: POSTGRES_DB
+              value: "open_data_data-quality"
+            - name: POSTGRES_SCHEMA
+              value: "public"
+            - name: DISTRICT_TABLE
+              value: "seller_wise_district_level_order"
+            - name: SUB_CATEGORY_TABLE
+              value: "seller_wise_sub_category_level_order"
+            - name: CATEGORY_TABLE
+              value: "seller_wise_category_level_order"
+            - name: AGG_TBL_B2C
+              value: "fact_order_detail"
+            - name: TBL_PINCODE
+              value: "pincode"
+            - name: AWS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-aws-secret
+                  key: AWS_ACCESS_KEY
+            - name: AWS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-aws-secret-key
+                  key: AWS_SECRET_KEY
+            - name: SCHEMA_NAME
+              value: "awsdatacatalog"
+            - name: S3_STAGING_DIR
+              value: "s3://aws-athena-query-results-568130295144-ap-south-1/external-queries-results/"
+            - name: DATABASE_NAME
+              value: "default"
+            - name: AGG_TBL_B2C
+              value: "nhm_order_fulfillment_subset_v1"
+            - name: AWS_REGION
+              value: "ap-south-1"
+            - name: KEY_DATA_INSIGHTS_TABLE
+              value: "key_insights_district_wise"
+            - name: KEY_INSIGHTS_SUB_CATEGORY_TABLE
+              value: "key_insights_sub_category"
+            - name: KEY_INSIGHTS_SELLER
+              value: "key_insights_sellers"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-data-quality-secret
+                  key: db_password
+            - name: EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ondc-open-data-webapp-secret-email
+                  key: EMAIL_PASSWORD
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "250m"
+
+---
+# webserver service yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: open-data-webserver-service-data-quality
+  namespace: ondc-open-data
+spec:
+  selector:
+    app: open-data-webserver-data-quality
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: NodePort
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: open-data-webserver-staging-hpa
+  namespace: ondc-open-data
+spec:
+  maxReplicas: 1
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: open-data-webserver-data-quality-deployment
+  targetCPUUtilizationPercentage: 80

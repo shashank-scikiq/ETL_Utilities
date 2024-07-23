@@ -1,0 +1,7 @@
+In case we need to run any ad-hoc scripts, create a file in this folder
+
+start with _hotfix_L1<name>.sql -- Runs at the beginning. 
+
+start with _hotfix_L2<name>.sql -- Runs at the end. 
+
+This should be used with Extreme caution. 

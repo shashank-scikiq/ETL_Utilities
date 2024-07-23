@@ -1,0 +1,2 @@
+INSERT into POSTGRES_SCHEMA.DIM_DATES_TBL(order_date)
+select distinct order_date from POSTGRES_SCHEMA.AGG_TBL_B2C

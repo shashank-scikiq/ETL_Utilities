@@ -1,0 +1,48 @@
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: ondc-open-data
+  name: ondc-open-data-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:568130295144:certificate/d1b99113-75b7-41cd-a3e1-cc1dbf36292a
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  # host for analytics-api-1.aws.ondc.org
+  rules:
+    - host: stage-open-data.aws.ondc.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: open-data-webserver-service-staging
+                port:
+                  number: 8001
+    - host: open-data.aws.ondc.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: open-data-webserver-service
+                port:
+                  number: 8001
+
+    - host: data-quality-open-data.aws.ondc.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: open-data-webserver-service-data-quality
+                port:
+                  number: 8001
+

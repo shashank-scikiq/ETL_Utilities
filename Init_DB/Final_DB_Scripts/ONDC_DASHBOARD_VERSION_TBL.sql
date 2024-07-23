@@ -1,0 +1,2 @@
+INSERT INTO POSTGRES_SCHEMA.ONDC_DASHBOARD_VERSION_TBL(major, minor, minor_minor, run_date, hot_fix_file_name)
+VALUES(VER_MAJOR,VER_MINOR,VER_MINOR_MINOR,CURRENT_TIMESTAMP, 'First Deployment'::character varying)

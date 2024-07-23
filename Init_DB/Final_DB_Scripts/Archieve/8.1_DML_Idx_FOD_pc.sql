@@ -1,0 +1,1 @@
+create index if not exists idx_fod_pc on POSTGRES_SCHEMA.AGG_TBL_B2C(delivery_pincode,seller_pincode);

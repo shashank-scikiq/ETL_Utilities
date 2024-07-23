@@ -1,0 +1,1 @@
+create index if not exists idx_swdlo on POSTGRES_SCHEMA.DISTRICT_TBL(order_date, delivery_district, delivery_state, seller_state, seller_district, seller_state_code);

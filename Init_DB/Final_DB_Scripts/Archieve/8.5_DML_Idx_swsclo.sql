@@ -1,0 +1,1 @@
+create index if not exists idx_swsclo on POSTGRES_SCHEMA.SUB_CATEGORY_TBL(order_date, category, sub_category, delivery_district, delivery_state, seller_state, seller_district, seller_state_code, delivery_state_code)
