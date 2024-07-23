@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: db.Dockerfile
-    image: db_update_dev:version_3.9.0
+    image: db_update_dev:version_3.9.2
     env_file:
       - /home/shashank_daaslabs/Software/aws_dev.env
     environment:
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: db.Dockerfile
-    image: db_update_test:version_3.9.0
+    image: db_update_test:version_3.9.2
     env_file:
       - /home/shashank_daaslabs/Software/aws_stage.env
     environment:
@@ -34,63 +34,12 @@ services:
     build:
       context: .
       dockerfile: db.Dockerfile
-    image: db_update_test:version_3.9.0
+    image: db_update_test:version_3.9.2
     env_file:
       - /home/shashank_daaslabs/Software/aws_prod.env
     environment:
       - POSTGRES_SCHEMA=prod
       - EMAIL_ENV=Production
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_prod.env:/mnt/env/aws_prod.env
-
-  webapp_dev:
-    container_name: webapp_dev
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    image: webapp_dev:version_3.9.0
-    ports:
-      - "8082:8001"
-    env_file:
-      - /home/shashank_daaslabs/Software/aws_dev.env
-    restart: unless-stopped
-    environment:
-      - POSTGRES_SCHEMA=dev
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_dev.env:/mnt/env/aws_dev.env
-
-  webapp_stage:
-    container_name: webapp_stage
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    image: webapp_test:version_3.9.0
-    ports:
-      - "8081:8001"
-    env_file:
-      - /home/shashank_daaslabs/Software/aws_stage.env
-    restart: unless-stopped
-    environment:
-      - POSTGRES_SCHEMA=stage
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_stage.env:/mnt/env/aws_stage.env
-  
-  webapp_prod:
-    container_name: webapp_prod
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    image: webapp_test:version_3.9.0
-    ports:
-      - "8081:8001"
-    env_file:
-      - /home/shashank_daaslabs/Software/aws_prod.env
-    restart: unless-stopped
-    environment:
-      - POSTGRES_SCHEMA=prod
     volumes:
       - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
       - /home/shashank_daaslabs/Software/aws_prod.env:/mnt/env/aws_prod.env

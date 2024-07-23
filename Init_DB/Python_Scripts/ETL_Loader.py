@@ -138,7 +138,7 @@ async def ETL_initialization():
     # Check if Data dump exists. If not start the dump process.
     parquet_files = await utils.find_parquet_files(ed.dump_loc)
     if parquet_files:
-        app_logger.info("Source Directory anf files exists. ")
+        app_logger.info("Source Directory and files exists. ")
         app_logger.info("Proceeding with data load.")
     else:
         app_logger.debug("\nSource files not found. Starting the extract process.")
@@ -175,8 +175,14 @@ async def ETL_initialization():
                 app_logger.info("Proceeding with data load.")
             else:
                 app_logger.debug("\nSource files not found. Starting the extract process.")
+                
+                app_logger.info("\n Extracting data from AWS Athena.")
+                await query_athena_db()
+                
+                app_logger.info("\n Extracting data from NO Tables.")
+                await query_no_tables()
+                
                 app_logger.info("Transforming the data.")
-
                 # Transforming the data
                 await transform_data()
 

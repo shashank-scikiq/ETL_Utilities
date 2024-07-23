@@ -1,0 +1,59 @@
+open_dashboard/dashboard/migrations/__pychache__/
+open_dashboard/open_dashboard/__pychache__/
+**/__pycache__/
+.venv
+.idea
+**.logs
+**/logs/
+**/log
+**.env
+.venv
+**venv**
+credentials.json
+token.json
+APP/poetry.lock
+Init_DB/poetry.lock
+APP/static/*
+**.ipynb_checkpoints
+*.parquet
+**/package-lock.json
+
+
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+**/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+**/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+**/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings

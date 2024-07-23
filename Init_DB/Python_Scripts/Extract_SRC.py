@@ -259,18 +259,18 @@ async def query_no_tables():
     await asyncio.gather(*tasks)
 
 
-if __name__ == "__main__":
-    try:
-        os.path.exists(ed.dump_loc)
-    except Exception as e:
-        print(f"{ed.dump_loc} not found.")
-        raise e
-    else:
-        print(f"Will Dump data to {ed.dump_loc}.")
-        print(ed.dump_loc)
-        print(ed.raw_files)
-        print(ed.processed_files)
-        print(ed.total_orders)
-        print(os.getenv('DATA_DUMP_LOC'))
-        # asyncio.run(query_no_tables())
-        asyncio.run(query_athena_db())
+# if __name__ == "__main__":
+#     try:
+#         os.path.exists(ed.dump_loc)
+#     except Exception as e:
+#         print(f"{ed.dump_loc} not found.")
+#         raise e
+#     else:
+#         print(f"Will Dump data to {ed.dump_loc}.")
+#         print(ed.dump_loc)
+#         print(ed.raw_files)
+#         print(ed.processed_files)
+#         print(ed.total_orders)
+#         print(os.getenv('DATA_DUMP_LOC'))
+#         # asyncio.run(query_no_tables())
+#         asyncio.run(query_athena_db())

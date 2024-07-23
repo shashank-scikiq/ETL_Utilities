@@ -12,24 +12,7 @@ services:
       - EMAIL_ENV=localhost
     volumes:
       - /home/sraj/Documents/OD_DB_Files:/mnt/data
-      - /home/sraj/Documents/GitHub/OD_Webapp/aws_common.env:/mnt/env/aws_common.env
-  
-  webapp_local:
-    container_name: webapp_local
-    build:
-      context: .
-      dockerfile: app.Dockerfile
-    image: webapp_local:version_3.9.2
-    ports:
-      - "8081:8001"
-    env_file:
-      - aws_common.env
-    restart: unless-stopped
-    environment:
-     - POSTGRES_SCHEMA=loc_dev
-    volumes:
-      - /home/sraj/Documents/OD_DB_Files:/mnt/data
-      - /home/sraj/Documents/GitHub/OD_Webapp/aws_common.env:/mnt/env/aws_common.env
+      - /home/sraj/Documents/GitHub/ETL_Utilities/aws_common.env:/mnt/env/aws_common.env
 
 networks:
   my_custom_network:
