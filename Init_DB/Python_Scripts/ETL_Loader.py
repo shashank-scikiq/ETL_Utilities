@@ -86,6 +86,7 @@ async def run_script(db_conn, script_file: str):
 async def insert_into_pincode(db_url: str):
     engine = create_engine(db_url)
     df = pd.read_parquet(f"{ed.script_loc}pc.parquet")
+    df["Pincode"] = df["Pincode"].astype(str)
     app_logger.info(df.head(2))
     try:
         df.to_sql(name=os.getenv("TBL_PINCODE"), con=engine, schema=f'{os.getenv("POSTGRES_SCHEMA")}',
@@ -156,23 +157,29 @@ async def ETL_initialization():
 
     try:
         async with pool.acquire() as db_conn:
+            app_logger.info(f"\nCreating the target schema - {schema_name}")
             await create_schema(db_conn)
 
             # Creating the Tables based on Environment
+            app_logger.info("Creating the tables.")
             await table_ops()
 
             # Insert data into pincode table
+            app_logger.info("Inserting data into Pincode Table.")
             await insert_into_pincode(pg_url)
 
             # Truncate tables asynchronously
+            app_logger.info("Truncating L1 Tables.")
             await trunc_tbls_async(L1_TBLS, pool)
             await asyncio.sleep(2)
 
-            app_logger.info("Checking Existing Transformed")
+            app_logger.info("\nChecking Existing Transformed data.")
+            app_logger.debug(f"Location is {ed.processed_files}.")
             parquet_files = await utils.find_parquet_files(ed.processed_files)
+            
             if parquet_files:
-                app_logger.info("Source Directory transformed files exists. ")
-                app_logger.info("Proceeding with data load.")
+                app_logger.info("Source Directory and transformed files exists.")
+                app_logger.info("Proceeding with data load to target DB.")
             else:
                 app_logger.debug("\nSource files not found. Starting the extract process.")
                 
@@ -182,7 +189,7 @@ async def ETL_initialization():
                 app_logger.info("\n Extracting data from NO Tables.")
                 await query_no_tables()
                 
-                app_logger.info("Transforming the data.")
+                app_logger.info("\nTransforming the data.")
                 # Transforming the data
                 await transform_data()
 
@@ -194,6 +201,7 @@ async def ETL_initialization():
                 utils.catalogue_files_tgt(ed.processed_files)
 
             # Load the Data into the DB. 
+            app_logger.info("\nPopulating the data into Target DB.")
             await Load_DB.populate_data()
 
             # Truncate the Business Logic Data. 

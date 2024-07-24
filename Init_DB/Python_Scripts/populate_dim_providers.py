@@ -135,6 +135,7 @@ async def enrich_export(parquet_file: str):
             table = pq.read_table(parquet_file)
 
             pincode_df = pd.read_parquet(f"{ed.script_loc}pc.parquet")
+            pincode_df["Pincode"] = pincode_df["Pincode"].astype(str)
             pincode_table = pa.Table.from_pandas(df=pincode_df)
             table = table.join(pincode_table,
                                keys='Pincode')

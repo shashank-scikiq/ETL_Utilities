@@ -9,6 +9,7 @@ import utils
        
 sem = asyncio.Semaphore(15)
 pc_tbl = pd.read_parquet(ed.script_loc+"pc.parquet")
+pc_tbl["Pincode"] = pc_tbl["Pincode"].astype(str)
 
 
 async def process_retail_b2c(tgt_file: str, file_category:str):
@@ -134,11 +135,15 @@ async def process_logistics(tgt_file: str, file_category:str):
         print(f"Proceeding with {tgt_file}")
     
     print("Truncating the Pincode columns")
-    tgt_df["pick_up_pincode"] = tgt_df["pick_up_pincode"].str.strip()
-    tgt_df["delivery_pincode"] = tgt_df["delivery_pincode"].str.strip()
+    # tgt_df["pick_up_pincode"] = tgt_df["pick_up_pincode"].str.strip()
+    # tgt_df["delivery_pincode"] = tgt_df["delivery_pincode"].str.strip()
     
-    tgt_df["pick_up_pincode"] = tgt_df["pick_up_pincode"].str.split(".",expand=True)[0]
-    tgt_df["delivery_pincode"] = tgt_df["delivery_pincode"].str.split(".",expand=True)[0]
+    # tgt_df["pick_up_pincode"] = tgt_df["pick_up_pincode"].str.split(".",expand=True)[0]
+    # tgt_df["delivery_pincode"] = tgt_df["delivery_pincode"].str.split(".",expand=True)[0]
+    
+    tgt_df["pick_up_pincode"] = tgt_df["pick_up_pincode"].astype(float).astype(int).astype(str)
+    tgt_df["delivery_pincode"] = tgt_df["delivery_pincode"].astype(float).astype(int).astype(str)
+
     
     print("Populating Delivery Stats.")
     final_df = tgt_df.merge(pc_tbl, left_on="delivery_pincode", 
@@ -244,12 +249,12 @@ async def transform_data():
     await asyncio.gather(*main_tasks)
     
 
-# if __name__ == "__main__":
-#     asyncio.run(transform_data())
+if __name__ == "__main__":
+    asyncio.run(transform_data())
   
-#     print("\nCatalogue of Files before.")
-#     utils.catalogue_files_src(ed.raw_files)  
+    print("\nCatalogue of Files before.")
+    utils.catalogue_files_src(ed.raw_files)  
     
-#     print("\nCatalogue of Files after.")
-#     utils.catalogue_files_tgt(ed.processed_files)
+    print("\nCatalogue of Files after.")
+    utils.catalogue_files_tgt(ed.processed_files)
     

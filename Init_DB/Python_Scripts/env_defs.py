@@ -19,10 +19,10 @@ if os.path.exists("/app/init_db/Final_DB_Scripts/"):
     script_loc = "/app/init_db/Final_DB_Scripts/"
     py_scr_loc = "/app/init_db/Python_Scripts/"
     main_loc = "/app/init_db/"
-    dump_loc = '/mnt/data'
-    raw_files = f"{dump_loc}/Raw_DB_Files/"
-    processed_files = f"{dump_loc}/Processed_Files/"
-    total_orders = f"{dump_loc}/total_orders/"
+    dump_loc = '/mnt/data/'
+    raw_files = f"{dump_loc}Raw_DB_Files/"
+    processed_files = f"{dump_loc}Processed_Files/"
+    total_orders = f"{dump_loc}total_orders/"
     req_envs = f"{py_scr_loc}/required_envs.txt"
     pincode_file = f"{script_loc}pc.parquet"
     tbl_names = f"{script_loc}tbl_names.txt"
@@ -33,7 +33,7 @@ else:
     py_scr_loc = os.getcwd()
     main_loc = "../../"
     script_loc = f"{main_loc}/Init_DB/Final_DB_Scripts/"
-    env_file = f"{main_loc}aws_common.env"
+    env_file = f"{main_loc}.env"
 
     try:
         load_dotenv(env_file)
@@ -42,7 +42,7 @@ else:
     else:
         print("Loading Local ENVs")
 
-    dump_loc = f"{os.getenv('DATA_DUMP_LOC')}OD_DB_Files"
+    dump_loc = f"{os.getenv('DATA_DUMP_LOC')}"
     raw_files = f"{dump_loc}/Raw_DB_Files/"
     processed_files = f"{dump_loc}/Processed_Files/"
     total_orders = f"{dump_loc}/total_orders/"

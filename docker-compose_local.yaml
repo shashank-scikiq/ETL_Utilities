@@ -6,12 +6,12 @@ services:
       dockerfile: db.Dockerfile
     image: db_update_local:version_3.9.2
     env_file:
-      - aws_common.env
+      - .env
     environment:
       - POSTGRES_SCHEMA=loc_dev
       - EMAIL_ENV=localhost
     volumes:
-      - /home/sraj/Documents/OD_DB_Files:/mnt/data
+      - /home/sraj/Documents/OD_DB_Files/:/mnt/data/
       - /home/sraj/Documents/GitHub/ETL_Utilities/aws_common.env:/mnt/env/aws_common.env
 
 networks:

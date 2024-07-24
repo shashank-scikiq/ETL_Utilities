@@ -1,6 +1,5 @@
-FROM python:3.11.9-slim
+FROM python:3.12.4-slim
 
-WORKDIR /app
 WORKDIR /app/init_db
 
 COPY Init_DB/ /app/init_db/

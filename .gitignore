@@ -1,6 +1,6 @@
 open_dashboard/dashboard/migrations/__pychache__/
 open_dashboard/open_dashboard/__pychache__/
-**/__pycache__/
+**/__pycache__/*
 .venv
 .idea
 **.logs
@@ -17,7 +17,8 @@ APP/static/*
 **.ipynb_checkpoints
 *.parquet
 **/package-lock.json
-
+**.pyc*
+Init_DB/Python_Scripts/__pycache__
 
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 

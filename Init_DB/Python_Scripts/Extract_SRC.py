@@ -90,14 +90,14 @@ async def execute_athena_query( tbl_name, date_val, semaphore, client, database,
                     return df, duration, row_count
                 else:
                     state_change_reason = response['QueryExecution']['Status'].get('StateChangeReason', 'No reason provided')
-                    print(f"******{tbl_name} : {date_val} ******")
+                    src_logger.error(f"******{tbl_name} : {date_val} ******")
                     raise Exception(f"Query failed with status: {status}. Reason: {state_change_reason}")
 
             except ClientError as e:
                 if e.response['Error']['Code'] == 'TooManyRequestsException':
                     retries += 1
                     wait_time = min(2 ** retries, 60)  # Exponential backoff
-                    print(f"TooManyRequestsException encountered. Retrying in {wait_time} seconds...")
+                    src_logger.error(f"TooManyRequestsException encountered. Retrying in {wait_time} seconds...")
                     await asyncio.sleep(wait_time)
                 else:
                     raise e
@@ -125,8 +125,8 @@ async def query_athena( tbl_name, date_val, database, query, output_location, re
 
 
 @timing_decorator
-async def dump_data(tbl_name: str, dump_loc: str, date_range: list, read_script_file: str):
-    print("Inside Main.")
+async def dump_data(tbl_name: str, date_range: list, read_script_file: str):
+    # print("Inside Main.")
     database = 'default'
     output_location = os.getenv('S3_STAGING_DIR')
     region_name = os.getenv('AWS_REGION')
@@ -141,11 +141,11 @@ async def dump_data(tbl_name: str, dump_loc: str, date_range: list, read_script_
         df, duration, row_count = await query_athena(tbl_name, date_val, database, formatted_query, 
                                                      output_location, region_name)
         
-        print(f"\nResult for {tbl_name}:{formatted_date} ")
+        src_logger.info(f"\nResult for {tbl_name}:{formatted_date} ")
         filename = f"query_result_{formatted_date}_{tbl_name}.parquet"
         df.to_parquet(ed.raw_files + filename)
-        print(f"Execution time: {duration} seconds")
-        print(f"Number of rows returned: {row_count}")
+        src_logger.info(f"Execution time: {duration} seconds")
+        src_logger.info(f"Number of rows returned: {row_count}")
 
         
     date_chunks = chunk_date_ranges(date_range, chunk_size=10)
@@ -189,7 +189,7 @@ async def dump_data_for_day(date: datetime.date):
             conn = await asyncpg.connect(**source_params)
             records = await conn.fetch(query, date)
     except Exception as e:
-        print(f"{datetime.now()}: Error !!! {e}")
+        src_logger.error(f"{datetime.now()}: Error !!! {e.args[0]}")
         raise asyncpg.PostgresError
     else:
         src_logger.info(f"Successfully got data for {date}")
@@ -200,7 +200,7 @@ async def dump_data_for_day(date: datetime.date):
         
         del (df1, tmp_df)
     finally:
-        src_logger.info(f"Closing the connection.")
+        src_logger.info(f"Closing the connection for {date}.")
         if conn:
             await conn.close()
 
@@ -223,7 +223,7 @@ async def query_athena_db(src_tbl_name: str = ""):
         "ATH_TBL_LOG": os.getenv("ATH_TBL_LOG.sql")
     }
     
-    print("Extracting the Data right now.")
+    src_logger.info("Extracting the Data right now.")
     src_tbl_dict = {
         os.getenv("ATH_TBL_B2C") :  "ATH_TBL_B2C.sql",
         os.getenv("ATH_TBL_B2B") :  "ATH_TBL_B2B.sql",
@@ -231,19 +231,19 @@ async def query_athena_db(src_tbl_name: str = ""):
         os.getenv("ATH_TBL_LOG") :  "ATH_TBL_LOG.sql",
     }
     
-    print("Fetching Date Ranges.")
+    src_logger.info("Fetching Date Ranges.")
     date_ranges = await get_date_ranges() 
-    print("Date ranges obtained.")
+    src_logger.info("Date ranges obtained.")
     
-    print(src_tbl_dict)
+    src_logger.info(src_tbl_dict)
     
     if src_tbl_name:
         tmp_tbl = tbl_key_val[src_tbl_name]
-        tasks = [dump_data(tbl_name= tmp_tbl, dump_loc= ed.dump_loc,
+        tasks = [dump_data(tbl_name= tmp_tbl,
                           date_range= date_ranges[tmp_tbl],
                           read_script_file= src_tbl_dict[tmp_tbl])]
     else:
-        tasks = [dump_data(tbl_name= key, dump_loc= ed.dump_loc,
+        tasks = [dump_data(tbl_name= key,
                           date_range= date_ranges[key],
                           read_script_file= value) for key, value in src_tbl_dict.items()]
 
@@ -252,11 +252,16 @@ async def query_athena_db(src_tbl_name: str = ""):
 
 @timing_decorator
 async def query_no_tables():
-    print("Extracting the Data right now.")
+    src_logger.info("Extracting the Data right now.")
     src_logger.info(f" Starting to get data from Source NO Tables.")
     day_range = await fetch_date_range()
     tasks = [dump_data_for_day(day) for day in day_range]
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except Exception as e:
+        raise e
+    else:
+        src_logger.info("Process Completed.")
 
 
 # if __name__ == "__main__":
