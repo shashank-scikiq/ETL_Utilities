@@ -8,13 +8,8 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_SCHEMA=loc_dev
+      - POSTGRES_SCHEMA=loc_new
       - EMAIL_ENV=localhost
     volumes:
       - /home/sraj/Documents/OD_DB_Files/:/mnt/data/
-      - /home/sraj/Documents/GitHub/ETL_Utilities/aws_common.env:/mnt/env/aws_common.env
-
-networks:
-  my_custom_network:
-    name: OD_DB
-    driver: bridge
+      - /home/sraj/Documents/GitHub/ETL_Utilities/.env:/mnt/env/.env

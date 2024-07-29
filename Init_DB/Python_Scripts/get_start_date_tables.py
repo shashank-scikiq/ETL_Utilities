@@ -50,6 +50,7 @@ async def run_gen_qry(date_field_name: str = "", tbl_name: str = "", mnth=6, val
                 out = cur.execute(stmt).fetchall()
             except Exception as e:
                 app_logger.error(e.args[0])
+                raise e
             else:
                 conn_src_athena.close()
                 print(tbl_name, out)
@@ -63,6 +64,7 @@ async def run_gen_qry(date_field_name: str = "", tbl_name: str = "", mnth=6, val
                 out = cur.execute(stmt).fetchall()
             except Exception as e:
                 app_logger.error(e.args[0])
+                raise e
             else:
                 conn_src_athena.close()
                 return tbl_name, out
@@ -93,12 +95,12 @@ async def is_there_data_in_aws(mnth: str):
         result_dict[x] = y[0]
     return result_dict
 
-# async def main():
-#     date_ranges = await get_date_ranges()
-#     print(date_ranges.keys())
+async def main():
+    date_ranges = await get_date_ranges()
+    print(date_ranges.keys())
 
-#     is_data = await run_tbl_chk(6)
-#     print(is_data)
+    is_data = await is_there_data_in_aws(7)
+    print(is_data)
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

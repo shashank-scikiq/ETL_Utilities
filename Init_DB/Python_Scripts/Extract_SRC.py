@@ -14,11 +14,19 @@ from utils import source_params
 import sys
 import env_defs as ed
 
+src_logger = log_config.start_log()
 
-load_dotenv(ed.env_file)
+if utils.chk_req_envs(ed.req_envs):
+    src_logger.info("Environment Variables Loaded.")
+elif load_dotenv(ed.env_file):
+    src_logger.info("Loading Env manually.")
+else:
+    src_logger.error("Error loading environment files.")
+    src_logger.error("Exiting.")
+    sys.exit()
+    
 src_schema = os.getenv("SRC_SCHEMA_NAME")
 src_no_table = os.getenv("SRC_NO_TBL_NAME")
-src_logger = log_config.start_log()
 
 tgt_schema = os.getenv("POSTGRES_SCHEMA")
 tgt_table = os.getenv("SELLER_TBL")
@@ -164,7 +172,7 @@ async def fetch_date_range():
         conn = await asyncpg.connect(**source_params)
         query = f"""SELECT DISTINCT "Date" AS src_date
             FROM {src_schema}.{src_no_table}
-            WHERE "Date" > '2023-10-31';"""
+            WHERE "Date" > Date'{os.getenv('START_DATE')}';"""
 
         records = await conn.fetch(query)
         await conn.close()
@@ -179,7 +187,9 @@ async def dump_data_for_day(date: datetime.date):
     cols = ["provider_key", "order_date", "category", "sub_category", "Pincode"]
     tmp_df = pd.DataFrame(columns=cols)
     query = f"""select concat("Seller App", concat('__',provider_id)) as provider_key,
-            "Date" as order_date, category, "Sub - Category" as sub_category,
+            "Date" as order_date, 
+            trim(category) as category, 
+            trim("Sub - Category") as sub_category,
             pin_code as "Pincode"
             from {src_schema}.{src_no_table} 
             where "Date" = $1"""
