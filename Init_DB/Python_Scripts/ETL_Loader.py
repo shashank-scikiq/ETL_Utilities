@@ -137,27 +137,39 @@ async def ETL_initialization():
             sys.exit()
 
     # Check if Data dump exists. If not start the dump process.
-    parquet_files = await utils.find_parquet_files(ed.dump_loc)
+    app_logger.info("Checking Existing Transformed data.")
+    app_logger.debug(f"Location is {ed.processed_files}.")
+    parquet_files = await utils.find_parquet_files(ed.processed_files)
+
     if parquet_files:
-        app_logger.info("Source Directory and files exists. ")
-        app_logger.info("Proceeding with data load.")
+        app_logger.info("Source Directory and transformed files exists.")
+        app_logger.info("Proceeding with data load to target DB.")
     else:
-        app_logger.debug("\nSource files not found. Starting the extract process.")
-        app_logger.info("Getting data from AWS Athena.")
+        app_logger.debug("Source files not found. Starting the extract process.")
+
+        app_logger.info("Extracting data from AWS Athena.")
         await query_athena_db()
 
-        app_logger.info("Getting data from NO Tables.")
+        app_logger.info("Extracting data from NO Tables.")
         await query_no_tables()
 
-        # Showing the count of the data downloaded. 
+        app_logger.info("Transforming the data.")
+        # Transforming the data
+        await transform_data()
+
+        app_logger.info("Catalogue of Files before.")
         utils.catalogue_files_src(ed.raw_files)
+        print("Catalogue Read")
+
+        app_logger.info("Catalogue of Files after.")
+        utils.catalogue_files_tgt(ed.processed_files)
 
     # Create a connection pool
     pool = await create_pool(pg_url)
 
     try:
         async with pool.acquire() as db_conn:
-            app_logger.info(f"\nCreating the target schema - {schema_name}")
+            app_logger.info(f"Creating the target schema - {schema_name}")
             await create_schema(db_conn)
 
             # Creating the Tables based on Environment
@@ -173,47 +185,19 @@ async def ETL_initialization():
             await trunc_tbls_async(L1_TBLS, pool)
             await asyncio.sleep(2)
 
-            app_logger.info("\nChecking Existing Transformed data.")
-            app_logger.debug(f"Location is {ed.processed_files}.")
-            parquet_files = await utils.find_parquet_files(ed.processed_files)
-            
-            if parquet_files:
-                app_logger.info("Source Directory and transformed files exists.")
-                app_logger.info("Proceeding with data load to target DB.")
-            else:
-                app_logger.debug("\nSource files not found. Starting the extract process.")
-                
-                app_logger.info("\n Extracting data from AWS Athena.")
-                await query_athena_db()
-                
-                app_logger.info("\n Extracting data from NO Tables.")
-                await query_no_tables()
-                
-                app_logger.info("\nTransforming the data.")
-                # Transforming the data
-                await transform_data()
-
-                app_logger.info("\nCatalogue of Files before.")
-                utils.catalogue_files_src(ed.raw_files)
-                print("Catalogue Read")
-
-                app_logger.info("\nCatalogue of Files after.")
-                utils.catalogue_files_tgt(ed.processed_files)
-
             # Load the Data into the DB. 
-            app_logger.info("\nPopulating the data into Target DB.")
+            app_logger.info("Populating the data into Target DB.")
             await Load_DB.populate_data()
 
             # Truncate the Business Logic Data. 
-            print("\nTruncating tables with Business logic.")
+            print("Truncating tables with Business logic.")
             await trunc_tbls_async(L2_TBLS, pool)
 
             # Populate the total sellers' table. 
-            print("\nPopulating Total Sellers.")
+            print("Populating Total Sellers.")
             await get_sellers()
 
         # Generating Data in pincode as it gets cleared above. 
-        # :TODO: Will fix this later. 
         # This is needed to generate DIM Districts.
         await insert_into_pincode(pg_url)
 

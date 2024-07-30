@@ -9,7 +9,7 @@ except Exception as e:
     raise e
 
 
-async def check_files(dir_name: str) -> [int, list[str] | None]:
+async def check_files(dir_name: str):
     counter = 0
     date = []  # Get the names by pattern matching.
     for _, _, files in os.walk(dir_name):

@@ -52,7 +52,7 @@ async def fetch_date_range():
         conn = await asyncpg.connect(**source_params)
         query = f"""SELECT DISTINCT "Date" AS src_date
             FROM {src_schema}.{src_no_table}
-            WHERE "Date" > '2023-10-31';"""
+            WHERE "Date" >= '{os.getenv("START_DATE")}';"""
 
         records = await conn.fetch(query)
         await conn.close()

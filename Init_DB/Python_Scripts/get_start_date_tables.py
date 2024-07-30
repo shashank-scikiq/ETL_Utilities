@@ -87,7 +87,7 @@ async def get_date_ranges():
 
 
 @timing_decorator
-async def is_there_data_in_aws(mnth: str):
+async def is_there_data_in_aws(mnth: int):
     result_dict = {}
     tasks = [run_gen_qry(dt_field, tbl_name, mnth=mnth, validate_data=True) for tbl_name, dt_field in tbl_dt.items()]
     result = await asyncio.gather(*tasks)
@@ -95,12 +95,14 @@ async def is_there_data_in_aws(mnth: str):
         result_dict[x] = y[0]
     return result_dict
 
+
 async def main():
     date_ranges = await get_date_ranges()
     print(date_ranges.keys())
 
     is_data = await is_there_data_in_aws(7)
     print(is_data)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

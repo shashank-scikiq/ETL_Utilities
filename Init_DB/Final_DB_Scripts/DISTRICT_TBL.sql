@@ -27,7 +27,7 @@ IntraOrdersAggregation AS (
         seller_state_code,
         MAX(delivery_state) as delivery_state,
         MAX(seller_state) as seller_state,
-        COUNT(network_order_id) AS total_orders_delivered,
+        COUNT(DISTINCT network_order_id) AS total_orders_delivered,
         SUM(COALESCE(pincode_count, 0)) AS pincode_count,
         SUM(COALESCE(total_items, 0)) AS total_items,
         SUM(COALESCE(CASE WHEN delivery_state = seller_state THEN 1 ELSE 0 END, 0)) AS intrastate_orders,
