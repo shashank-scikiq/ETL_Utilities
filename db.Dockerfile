@@ -12,4 +12,4 @@ COPY requirements.txt /app/init_db/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "Python_Scripts/ETL_Loader.py"]
+CMD ["python", "Python_Scripts/ETL.py"]

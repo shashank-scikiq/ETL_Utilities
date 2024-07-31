@@ -14,14 +14,17 @@ from populate_dim_providers import get_sellers
 from CREATE_TBLS import table_ops
 from sqlalchemy import create_engine
 import env_defs as ed
-from get_start_date_tables import get_date_ranges, is_there_data_in_aws
+from get_start_date_tables import is_there_data_in_aws
 import sys
-from Extract_SRC import query_no_tables, query_athena_db
+from Extract_SRC import query_athena_db
 from RUN_Business_Logic_async import business_logic
 from Transform_Data import transform_data
+from Extract_NO import query_no_tables
+
 
 # Initialize logging
 app_logger = log_config.start_log()
+
 
 # Constants and configurations
 user = os.getenv('POSTGRES_USER')
