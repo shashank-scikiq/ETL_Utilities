@@ -6,11 +6,11 @@ services:
       dockerfile: db.Dockerfile
     image: db_update_test:version_4.0.0
     env_file:
-      - /home/shashank_daaslabs/Software/ec2_common.env
+      - /home/shashank_daaslabs/Software/etl_ec2.env
     environment:
       - POSTGRES_SCHEMA=ec2_prod
       - EMAIL_ENV=Production
     volumes:
       - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/ec2_common.env:/mnt/env/ec2_common.env
+      - /home/shashank_daaslabs/Software/etl_ec2.env:/mnt/env/ec2_common.env
 

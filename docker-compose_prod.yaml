@@ -6,13 +6,13 @@ services:
       dockerfile: db.Dockerfile
     image: db_update_test:version_4.0.0
     env_file:
-      - /home/shashank_daaslabs/Software/aws_stage.env
+      - /home/shashank_daaslabs/Software/etl_stage.env
     environment:
       - POSTGRES_SCHEMA=stage
       - EMAIL_ENV=staging_env
     volumes:
       - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_stage.env:/mnt/env/aws_stage.env
+      - /home/shashank_daaslabs/Software/etl_stage.env:/mnt/env/aws_stage.env
 
   db_update_prod:
     container_name: db_update_prod
@@ -21,10 +21,10 @@ services:
       dockerfile: db.Dockerfile
     image: db_update_test:version_4.0.0
     env_file:
-      - /home/shashank_daaslabs/Software/aws_prod.env
+      - /home/shashank_daaslabs/Software/etl_prod.env
     environment:
       - POSTGRES_SCHEMA=prod
       - EMAIL_ENV=Production
     volumes:
       - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_prod.env:/mnt/env/aws_prod.env
+      - /home/shashank_daaslabs/Software/etl_prod.env:/mnt/env/aws_prod.env
