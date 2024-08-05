@@ -23,8 +23,7 @@ tbl_dt = {
     f"{os.getenv('ATH_TBL_B2C')}": """date(date_parse("O_Created Date & Time",'%Y-%m-%dT%H:%i:%s'))""",
     f"{os.getenv('ATH_TBL_B2B')}": """date(date_parse("O_Created Date & Time",'%Y-%m-%dT%H:%i:%s'))""",
     f"{os.getenv('ATH_TBL_VOUCHER')}": """date("o_created_at_date")""",
-    # f"{os.getenv('ATH_TBL_LOG')}": """date("order_created_at")"""
-    f"{os.getenv('ATH_TBL_LOG')}": """Date(date_parse(order_created_at, '%Y-%m-%dT%H:%i:%s'))"""
+    f"{os.getenv('ATH_TBL_LOG')}": """date("order_created_at")"""
 }
 
 
