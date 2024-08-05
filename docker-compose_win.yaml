@@ -8,8 +8,8 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_SCHEMA=loc_new
+      - POSTGRES_SCHEMA=ec2_prod
       - EMAIL_ENV=localhost
     volumes:
-      - /home/sraj/Documents/OD_DB_Files/:/mnt/data/
-      - /home/sraj/Documents/GitHub/ETL_Utilities/.env:/mnt/env/.env
+      - D:\Work\Data Files\OD_DB_Files:/mnt/data
+      - D:\Work\open-data-prod\.env:/mnt/env/aws_common.env

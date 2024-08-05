@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: db.Dockerfile
-    image: db_update_test:version_3.9.3
+    image: db_update_test:version_4.0.0
     env_file:
       - /home/shashank_daaslabs/Software/ec2_common.env
     environment:

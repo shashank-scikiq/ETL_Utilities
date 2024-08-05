@@ -13,16 +13,16 @@ from dotenv import load_dotenv
 src_loc = "../../"
 
 try:
-    load_dotenv("../../aws_common.env")
+    load_dotenv("../../../.env")
 except:
-    raise FileNotFoundError("aws_common.env")
+    raise FileNotFoundError(".env")
 else:
     print("Env File Loaded.")
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 pc_tbl = os.getenv("SAMPLE_SPREADSHEET_ID")
-SAMPLE_RANGE_NAME = "Pincodes Updated!A1:E"
-tgt_dest = r"../../"
+SAMPLE_RANGE_NAME = "OD Pincode Final!A1:D"
+tgt_dest = r"../../../"
 
 
 def get_pincode_tbl():
@@ -65,17 +65,13 @@ def main():
     df_tbl.columns = [x for x in df_tbl.iloc[0]]
     df_tbl.drop(index=0, axis=1, inplace=True)
     dest_file1 = tgt_dest + "Init_DB/Final_DB_Scripts/" + "pc.parquet"
-    dest_file2 = tgt_dest + "APP/" + "pincode_table_open_data_dashboard.csv"
     print(dest_file1)
-    print(dest_file2)
-    if os.path.exists(dest_file1) or os.path.exists(dest_file2):
+    if os.path.exists(dest_file1):
         print("Pincode File Exists. Regenerating.")
         os.remove(dest_file1)
-        os.remove(dest_file2)
     else:
         print("Pincode file not found. Generating now.")
     df_tbl.to_parquet(dest_file1, index=False, compression='lz4')
-    df_tbl.to_csv(dest_file2, index=False)
     print("Total Rows = ", df_tbl.shape[0])
 
 
