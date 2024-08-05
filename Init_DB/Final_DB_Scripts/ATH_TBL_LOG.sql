@@ -7,7 +7,8 @@ WITH base_data AS (
         a.transaction_id,
         a.item_id,
         a.fulfillment_status,
-        date(a.order_created_at) AS order_date,
+        -- date(a.order_created_at) AS order_date,
+        date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) AS order_date,
         a.domain,
         date_parse(a.f_agent_assigned_at_date, '%Y-%m-%dT%H:%i:%s') AS f_agent_assigned_at_date,
         CASE
@@ -49,8 +50,10 @@ WITH base_data AS (
     and not(lower(bpp_id) like '%preprod%')
     and not(lower(bap_id) like '%demoproject%')
     and not(lower(bpp_id) like '%preprod')
-    and DATE(order_created_at) is not null
-    and DATE(a.order_created_at) = date('{date_val}')
+    -- and DATE(order_created_at) is not null
+    and date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) is not null
+    -- and DATE(a.order_created_at) = date('{date_val}')
+    and date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) = date('{date_val}')
     and a.bap_id is not null
     AND (a.on_confirm_error_code IS NULL OR a.on_confirm_error_code NOT IN ('65001', '66001'))
       AND (a.on_confirm_sync_response <> 'NACK' OR a.on_confirm_sync_response IS NULL)
@@ -65,7 +68,8 @@ filtered_data AS (
         a.transaction_id,
         a.item_id,
         a.fulfillment_status,
-        date(a.order_created_at) AS order_date,
+        -- date(a.order_created_at) AS order_date,
+        date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) AS order_date,
         a.domain,
         date_parse(a.f_agent_assigned_at_date, '%Y-%m-%dT%H:%i:%s') AS f_agent_assigned_at_date,
         CASE
@@ -101,8 +105,10 @@ filtered_data AS (
         null as seller_district,
         null as seller_state_code
     FROM ATH_DB.ATH_TBL_LOG a
-    WHERE date(a.order_created_at) >= DATE('2024-05-01')
-    and date(a.order_created_at) = date('{date_val}')
+    -- WHERE date(a.order_created_at) >= DATE('2024-05-01')
+    where date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) >= DATE('2025-05-01')
+    -- and date(a.order_created_at) = date('{date_val}')
+    and date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) = Date('{date_val}')
         AND date_parse(a.f_agent_assigned_at_date, '%Y-%m-%dT%H:%i:%s') IS NULL
         AND UPPER(a.latest_order_status) = 'CANCELLED'
         AND (CASE
@@ -115,7 +121,8 @@ filtered_data AS (
     and not(lower(bap_id) like '%demoproject%')
     and not(lower(bpp_id) like '%preprod')
     and a.bap_id is not null
-    and DATE(order_created_at) is not null
+    -- and DATE(order_created_at) is not null
+    and date(date_parse(a.order_created_at, '%Y-%m-%dT%H:%i:%s')) is not null
       AND (a.on_confirm_sync_response <> 'NACK' OR a.on_confirm_sync_response IS NULL)
   AND (a.on_confirm_error_code IS NULL OR a.on_confirm_error_code NOT IN ('65001', '66001'))
 )SELECT * FROM base_data
