@@ -156,16 +156,17 @@ async def ETL_initialization():
         app_logger.info("Extracting data from NO Tables.")
         await query_no_tables()
 
-        app_logger.info("Transforming the data.")
-        # Transforming the data
-        await transform_data()
+    
+    app_logger.info("Transforming the data.")
+    # Transforming the data
+    await transform_data()
 
-        app_logger.info("Catalogue of Files before.")
-        utils.catalogue_files_src(ed.raw_files)
-        print("Catalogue Read")
+    app_logger.info("Catalogue of Files before.")
+    utils.catalogue_files_src(ed.raw_files)
+    print("Catalogue Read")
 
-        app_logger.info("Catalogue of Files after.")
-        utils.catalogue_files_tgt(ed.processed_files)
+    app_logger.info("Catalogue of Files after.")
+    utils.catalogue_files_tgt(ed.processed_files)
 
     # Create a connection pool
     pool = await create_pool(pg_url)
